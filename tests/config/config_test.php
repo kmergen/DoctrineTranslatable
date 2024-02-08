@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Kmergen\DoctrineTranslatable\Contract\Provider\LocaleProviderInterface;
 use Kmergen\DoctrineTranslatable\Contract\Provider\UserProviderInterface;
-use Kmergen\DoctrineTranslatable\EventSubscriber\LoggableEventSubscriber;
 use Kmergen\DoctrineTranslatable\Tests\DatabaseLoader;
 use Kmergen\DoctrineTranslatable\Tests\Provider\TestLocaleProvider;
 use Kmergen\DoctrineTranslatable\Tests\Provider\TestUserProvider;
@@ -44,9 +43,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->alias(UserProviderInterface::class, TestUserProvider::class);
 
     $services->set(DatabaseLoader::class);
-
-    $services->set(LoggableEventSubscriber::class)
-        ->arg('$logger', service(TestLogger::class));
 
     $containerConfigurator->extension('doctrine', [
         'dbal' => [
