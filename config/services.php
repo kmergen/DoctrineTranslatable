@@ -17,7 +17,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->autowire()
         ->autoconfigure()
         ->bind('$translatableFetchMode', '%doctrine_behaviors_translatable_fetch_mode%')
-        ->bind('$translationFetchMode', '%doctrine_behaviors_translation_fetch_mode%');
+        ->bind('$translationFetchMode', '%doctrine_behaviors_translation_fetch_mode%')
+    ;
 
     $services->load('Kmergen\DoctrineTranslatable\\', __DIR__ . '/../src')
         ->exclude([

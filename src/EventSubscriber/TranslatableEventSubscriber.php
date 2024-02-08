@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Kmergen\DoctrineTranslatable\EventSubscriber;
 
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\ObjectManager;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslatableInterface;
@@ -59,14 +60,14 @@ final class TranslatableEventSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function postLoad(LifecycleEventArgs $lifecycleEventArgs): void
+    public function postLoad(PostLoadEventArgs $postLoadEventArgs): void
     {
-        $this->setLocales($lifecycleEventArgs);
+        $this->setLocales($postLoadEventArgs);
     }
 
-    public function prePersist(LifecycleEventArgs $lifecycleEventArgs): void
+    public function prePersist(PrePersistEventArgs $prePersistEventArgs): void
     {
-        $this->setLocales($lifecycleEventArgs);
+        $this->setLocales($prePersistEventArgs);
     }
 
     /**
@@ -161,9 +162,9 @@ final class TranslatableEventSubscriber implements EventSubscriberInterface
         }
     }
 
-    private function setLocales(LifecycleEventArgs $lifecycleEventArgs): void
+    private function setLocales(PostLoadEventArgs|PrePersistEventArgs $lifecycleEventArgs): void
     {
-        $entity = $lifecycleEventArgs->getEntity();
+        $entity = $lifecycleEventArgs->getObject();
         if (!$entity instanceof TranslatableInterface) {
             return;
         }
