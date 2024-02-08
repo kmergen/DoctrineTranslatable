@@ -9,7 +9,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo;
 use Doctrine\Persistence\ObjectManager;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslatableInterface;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
