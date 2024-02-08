@@ -19,7 +19,6 @@
         "doctrine/dbal": "^3.3",
         "doctrine/orm": "^3.0",
         "doctrine/doctrine-bundle": "^2.6",
-        "symfony/cache": "^5.4|^6.0",
         "symfony/dependency-injection": "^5.4|^6.0",
         "symfony/http-kernel": "^5.4|^6.0",
         "symfony/security-core": "^5.4|^6.0",
