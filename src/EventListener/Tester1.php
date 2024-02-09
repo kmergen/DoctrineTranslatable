@@ -9,7 +9,7 @@ use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Events;
 
-#[AsDoctrineListener(event: Events::postPersist, priority: 500, connection: 'default')]
+#[AsDoctrineListener(event: Events::postUpdate, priority: 500, connection: 'default')]
 class Tester1
 {
     public function postUpdate(PostUpdateEventArgs $args): void
