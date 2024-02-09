@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
-final class DoctrineBehaviorsExtension extends Extension
+final class DoctrineTranslatableExtension extends Extension
 {
     /**
      * @param array $configs
