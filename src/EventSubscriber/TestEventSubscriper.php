@@ -6,19 +6,27 @@ namespace Kmergen\DoctrineTranslatable\EventSubscriber;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 
 
 class TestEventSubscriber implements EventSubscriber
 {
-    public $preFooInvoked = false;
 
-    public function preFoo()
+    private ?string $hu = null;
+    public function __construct()
     {
-        $this->preFooInvoked = true;
+        $this->hu = 4;
     }
+
 
     public function getSubscribedEvents()
     {
-        return array(Events::prePersist);
+        return array(Events::preUpdate);
+    }
+
+    public function postUpdate(PostUpdateEventArgs $args)
+    {
+        $entity = $args->getObject();
+        $entityManager = $args->getObjectManager();
     }
 }
