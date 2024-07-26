@@ -6,6 +6,6 @@ namespace Kmergen\DoctrineTranslatable\Model\Translatable;
 
 trait TranslatableTrait
 {
-    use TranslatablePropertiesTrait;
-    use TranslatableMethodsTrait;
+  use TranslatablePropertiesTrait;
+  use TranslatableMethodsTrait;
 }

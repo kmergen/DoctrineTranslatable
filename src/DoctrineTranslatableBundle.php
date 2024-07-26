@@ -10,8 +10,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class DoctrineTranslatableBundle extends Bundle
 {
-    public function getContainerExtension(): Extension
-    {
-        return new DoctrineTranslatableExtension();
-    }
+  public function getContainerExtension(): Extension
+  {
+    return new DoctrineTranslatableExtension();
+  }
 }

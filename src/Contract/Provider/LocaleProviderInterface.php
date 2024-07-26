@@ -6,7 +6,7 @@ namespace Kmergen\DoctrineTranslatable\Contract\Provider;
 
 interface LocaleProviderInterface
 {
-    public function provideCurrentLocale(): ?string;
+  public function provideCurrentLocale(): ?string;
 
-    public function provideFallbackLocale(): ?string;
+  public function provideFallbackLocale(): ?string;
 }

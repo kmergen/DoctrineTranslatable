@@ -9,26 +9,26 @@ use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
 
 trait TranslatablePropertiesTrait
 {
-    /**
-     * @var Collection<string, TranslationInterface>
-     */
-    protected $translations;
+  /**
+   * @var Collection<string, TranslationInterface>
+   */
+  protected $translations;
 
-    /**
-     * @see mergeNewTranslations
-     * @var Collection<string, TranslationInterface>
-     */
-    protected $newTranslations;
+  /**
+   * @see mergeNewTranslations
+   * @var Collection<string, TranslationInterface>
+   */
+  protected $newTranslations;
 
-    /**
-     * currentLocale is a non persisted field configured during postLoad event
-     *
-     * @var string|null
-     */
-    protected $currentLocale;
+  /**
+   * currentLocale is a non persisted field configured during postLoad event
+   *
+   * @var string|null
+   */
+  protected $currentLocale;
 
-    /**
-     * @var string
-     */
-    protected $defaultLocale = 'en';
+  /**
+   * @var string
+   */
+  protected $defaultLocale = 'en';
 }
