@@ -30,5 +30,5 @@ trait TranslatablePropertiesTrait
   /**
    * @var string
    */
-  protected $defaultLocale = 'en';
+  protected $defaultLocale = 'de';
 }
