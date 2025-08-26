@@ -26,6 +26,7 @@ final class LoadClassMetadataListener extends BaseTranslatableListener
    */
   public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
   {
+
     $classMetadata = $args->getClassMetadata();
     $reflClass = $classMetadata->getReflectionClass();
     if (!$reflClass instanceof ReflectionClass) {
