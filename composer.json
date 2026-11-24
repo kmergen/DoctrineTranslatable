@@ -13,23 +13,28 @@
             "name": "Klaus Mergen"
         }
     ],
-     "require": {
+    "require": {
         "php": ">=8.4",
-        "doctrine/orm": "^3.0",
+        "doctrine/collections": "^2.2 || ^3.0",
         "doctrine/doctrine-bundle": "^3.0",
-        "symfony/framework-bundle": "^8.0",
-        "nette/utils": "^4.0"
+        "doctrine/orm": "^3.3",
+        "doctrine/persistence": "^4.0",
+        "symfony/config": "^8.1",
+        "symfony/dependency-injection": "^8.1",
+        "symfony/framework-bundle": "^8.1",
+        "symfony/http-foundation": "^8.1",
+        "symfony/http-kernel": "^8.1",
+        "symfony/translation-contracts": "^3.5"
     },
     "require-dev": {
-        "rector/rector": "^1.2",
-        "ext-pdo_mysql": "*",
-        "psr/log": "^1.1 || ^2.0 || ^3.0",
-        "php-parallel-lint/php-parallel-lint": "^1.4",
-        "phpunit/phpunit": "^10.0 || ^11.0"
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12.0",
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "Kmergen\\DoctrineTranslatable\\": "src"
+            "Kmergen\\DoctrineTranslatable\\": "src",
+            "Kmergen\\DoctrineTranslatable\\PHPStan\\": "utils/phpstan-behaviors/src"
         }
     },
     "autoload-dev": {
@@ -37,10 +42,11 @@
             "Kmergen\\DoctrineTranslatable\\Tests\\": "tests"
         }
     },
+    "scripts": {
+        "test": "phpunit",
+        "phpstan": "phpstan analyse"
+    },
     "config": {
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "phpstan/extension-installer": true
-        }
+        "sort-packages": true
     }
 }

@@ -8,12 +8,12 @@ use Kmergen\DoctrineTranslatable\Contract\Provider\LocaleProviderInterface;
 
 final class TestLocaleProvider implements LocaleProviderInterface
 {
-    public function provideCurrentLocale(): ?string
+    public function provideCurrentLocale(): string
     {
         return 'en';
     }
 
-    public function provideFallbackLocale(): ?string
+    public function provideFallbackLocale(): string
     {
         return 'en';
     }

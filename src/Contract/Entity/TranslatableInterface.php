@@ -11,7 +11,7 @@ interface TranslatableInterface
   /**
    * @return Collection<string, TranslationInterface>
    */
-  public function getTranslations();
+  public function getTranslations(): Collection;
 
   /**
    * @return Collection<string, TranslationInterface>
@@ -44,5 +44,8 @@ interface TranslatableInterface
 
   public function getDefaultLocale(): string;
 
+  /**
+   * @return class-string<TranslationInterface>
+   */
   public static function getTranslationEntityClass(): string;
 }

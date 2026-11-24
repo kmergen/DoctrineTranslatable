@@ -5,39 +5,42 @@ declare(strict_types=1);
 namespace Kmergen\DoctrineTranslatable\Tests\HttpKernel;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Kmergen\DoctrineTranslatable\DoctrineBehaviorsBundle;
+use Kmergen\DoctrineTranslatable\DoctrineTranslatableBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-final class DoctrineBehaviorsKernel extends Kernel
+final class TestKernel extends Kernel
 {
     /**
-     * @param string[] $configs
+     * @param list<string> $configs additional config files
      */
     public function __construct(
-        private array $configs = []
+        private readonly array $configs = [],
     ) {
-        parent::__construct('test', false);
+        parent::__construct('test', true);
     }
 
-    /**
-     * @return BundleInterface[]
-     */
-    public function registerBundles(): array
+    public function registerBundles(): iterable
     {
-        return [new DoctrineBehaviorsBundle(), new DoctrineBundle(), new FrameworkBundle()];
+        yield new FrameworkBundle();
+        yield new DoctrineBundle();
+        yield new DoctrineTranslatableBundle();
+    }
+
+    public function getProjectDir(): string
+    {
+        return dirname(__DIR__, 2);
     }
 
     public function getCacheDir(): string
     {
-        return sys_get_temp_dir() . '/doctrine_behaviors_test';
+        return sys_get_temp_dir() . '/kmergen_doctrine_translatable/cache/' . md5(serialize($this->configs));
     }
 
     public function getLogDir(): string
     {
-        return sys_get_temp_dir() . '/doctrine_behaviors_test_log';
+        return sys_get_temp_dir() . '/kmergen_doctrine_translatable/log';
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader): void

@@ -1,0 +1,14 @@
+includes:
+    - extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - src
+        - utils/phpstan-behaviors/src
+        - tests
+    ignoreErrors:
+        # Doctrine writes generated ids via reflection
+        -
+            identifier: property.onlyRead
+            path: tests/Fixtures/*

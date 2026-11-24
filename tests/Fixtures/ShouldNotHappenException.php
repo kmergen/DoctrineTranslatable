@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kmergen\DoctrineTranslatable\Exception;
+namespace Kmergen\DoctrineTranslatable\Tests\Fixtures;
 
 use Exception;
 

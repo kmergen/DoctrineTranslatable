@@ -9,26 +9,29 @@ use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
 
 trait TranslatablePropertiesTrait
 {
-  /**
-   * @var Collection<string, TranslationInterface>
-   */
-  protected $translations;
+    /**
+     * Mapped at runtime by LoadClassMetadataListener (indexed by locale).
+     *
+     * @var Collection<string, TranslationInterface>|null
+     */
+    protected ?Collection $translations = null;
 
-  /**
-   * @see mergeNewTranslations
-   * @var Collection<string, TranslationInterface>
-   */
-  protected $newTranslations;
+    /**
+     * Translations created via translate() that are not yet merged.
+     *
+     * @see mergeNewTranslations()
+     *
+     * @var Collection<string, TranslationInterface>|null
+     */
+    protected ?Collection $newTranslations = null;
 
-  /**
-   * currentLocale is a non persisted field configured during postLoad event
-   *
-   * @var string|null
-   */
-  protected $currentLocale;
+    /**
+     * Not persisted; set by TranslatableLocaleListener on postLoad/prePersist.
+     */
+    protected ?string $currentLocale = null;
 
-  /**
-   * @var string
-   */
-  protected $defaultLocale = 'de';
+    /**
+     * Not persisted; overwritten by TranslatableLocaleListener with the fallback locale.
+     */
+    protected string $defaultLocale = 'de';
 }

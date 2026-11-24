@@ -6,7 +6,7 @@ namespace Kmergen\DoctrineTranslatable\Tests\Fixtures\Entity\Translatable;
 
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
-use Kmergen\DoctrineTranslatable\Exception\ShouldNotHappenException;
+use Kmergen\DoctrineTranslatable\Tests\Fixtures\ShouldNotHappenException;
 
 #[Entity]
 class ExtendedTranslatableEntityWithJoinTableInheritance extends TranslatableEntityWithJoinTableInheritance

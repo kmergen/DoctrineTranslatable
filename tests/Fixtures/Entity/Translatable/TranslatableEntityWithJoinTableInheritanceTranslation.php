@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
-use Kmergen\DoctrineTranslatable\Exception\ShouldNotHappenException;
+use Kmergen\DoctrineTranslatable\Tests\Fixtures\ShouldNotHappenException;
 use Kmergen\DoctrineTranslatable\Model\Translatable\TranslationTrait;
 
 #[Entity]

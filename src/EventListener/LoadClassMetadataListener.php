@@ -4,118 +4,129 @@ declare(strict_types=1);
 
 namespace Kmergen\DoctrineTranslatable\EventListener;
 
-use Kmergen\DoctrineTranslatable\Contract\Entity\TranslatableInterface;
-use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
-use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-use Doctrine\ORM\Events;
-use ReflectionClass;
+use Kmergen\DoctrineTranslatable\Contract\Entity\TranslatableInterface;
+use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
 
+/**
+ * Adds the translatable <-> translations association mapping at runtime.
+ */
 #[AsDoctrineListener(event: Events::loadClassMetadata)]
-final class LoadClassMetadataListener extends BaseTranslatableListener
+final readonly class LoadClassMetadataListener
 {
-  /**
-   * @var string
-   */
-  public const LOCALE = 'locale';
+    public const string LOCALE = 'locale';
 
-  /**
-   * Adds mapping to the translatable and translations.
-   */
-  public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
-  {
+    private int $translatableFetchMode;
 
-    $classMetadata = $args->getClassMetadata();
-    $reflClass = $classMetadata->getReflectionClass();
-    if (!$reflClass instanceof ReflectionClass) {
-      // Class has not yet been fully built, ignore this event
-      return;
-    }
+    private int $translationFetchMode;
 
-    if ($classMetadata->isMappedSuperclass) {
-      return;
-    }
-
-    if (is_a($reflClass->getName(), TranslatableInterface::class, true)) {
-      $this->mapTranslatable($classMetadata);
-    }
-
-    if (is_a($reflClass->getName(), TranslationInterface::class, true)) {
-      $this->mapTranslation($classMetadata, $args->getObjectManager());
-    }
-
-  }
-
-  private function mapTranslatable(ClassMetadata $classMetadata): void
-  {
-    if ($classMetadata->hasAssociation('translations')) {
-      return;
-    }
-
-    $classMetadata->mapOneToMany([
-      'fieldName' => 'translations',
-      'mappedBy' => 'translatable',
-      'indexBy' => self::LOCALE,
-      'cascade' => ['persist', 'remove'],
-      'fetch' => $this->translatableFetchMode,
-      'targetEntity' => $classMetadata->getReflectionClass()
-        ->getMethod('getTranslationEntityClass')
-        ->invoke(null),
-      'orphanRemoval' => true,
-    ]);
-  }
-
-  private function mapTranslation(ClassMetadata $classMetadata, ObjectManager $objectManager): void
-  {
-    if (!$classMetadata->hasAssociation('translatable')) {
-      $targetEntity = $classMetadata->getReflectionClass()
-        ->getMethod('getTranslatableEntityClass')
-        ->invoke(null);
-
-      /** @var ClassMetadata $classMetadata */
-      $classMetadataTarget = $objectManager->getClassMetadata($targetEntity);
-      $singleIdentifierFieldName = $classMetadataTarget->getSingleIdentifierFieldName();
-
-      $classMetadata->mapManyToOne([
-        'fieldName' => 'translatable',
-        'inversedBy' => 'translations',
-        'cascade' => ['persist'],
-        'fetch' => $this->translationFetchMode,
-        'joinColumns' => [
-          [
-            'name' => 'translatable_id',
-            'referencedColumnName' => $singleIdentifierFieldName,
-            'onDelete' => 'CASCADE',
-          ]
-        ],
-        'targetEntity' => $targetEntity,
-      ]);
-    }
-
-    $name = $classMetadata->getTableName() . '_unique_translation';
-    if (
-      !$this->hasUniqueTranslationConstraint($classMetadata, $name) &&
-      $classMetadata->getName() === $classMetadata->rootEntityName
+    public function __construct(
+        string $translatableFetchMode = 'LAZY',
+        string $translationFetchMode = 'LAZY',
     ) {
-      $classMetadata->table['uniqueConstraints'][$name] = [
-        'columns' => ['translatable_id', self::LOCALE],
-      ];
+        $this->translatableFetchMode = $this->convertFetchMode($translatableFetchMode);
+        $this->translationFetchMode = $this->convertFetchMode($translationFetchMode);
     }
 
-    if (!$classMetadata->hasField(self::LOCALE) && !$classMetadata->hasAssociation(self::LOCALE)) {
-      $classMetadata->mapField([
-        'fieldName' => self::LOCALE,
-        'type' => 'string',
-        'length' => 5,
-      ]);
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
+    {
+        $classMetadata = $args->getClassMetadata();
+        if ($classMetadata->isMappedSuperclass) {
+            return;
+        }
+
+        $className = $classMetadata->getName();
+
+        if (is_a($className, TranslatableInterface::class, true)) {
+            $this->mapTranslatable($classMetadata);
+        }
+
+        if (is_a($className, TranslationInterface::class, true)) {
+            $this->mapTranslation($classMetadata, $args->getObjectManager());
+        }
     }
-  }
 
-  private function hasUniqueTranslationConstraint(ClassMetadata $classMetadata, string $name): bool
-  {
-    return isset($classMetadata->table['uniqueConstraints'][$name]);
-  }
+    private function convertFetchMode(string $fetchMode): int
+    {
+        return match (strtoupper($fetchMode)) {
+            'EAGER' => ClassMetadata::FETCH_EAGER,
+            'EXTRA_LAZY' => ClassMetadata::FETCH_EXTRA_LAZY,
+            default => ClassMetadata::FETCH_LAZY,
+        };
+    }
 
+    /**
+     * @param ClassMetadata<object> $classMetadata
+     */
+    private function mapTranslatable(ClassMetadata $classMetadata): void
+    {
+        if ($classMetadata->hasAssociation('translations')) {
+            return;
+        }
+
+        /** @var class-string<TranslatableInterface> $className */
+        $className = $classMetadata->getName();
+
+        $classMetadata->mapOneToMany([
+            'fieldName' => 'translations',
+            'mappedBy' => 'translatable',
+            'indexBy' => self::LOCALE,
+            'cascade' => ['persist', 'remove'],
+            'fetch' => $this->translatableFetchMode,
+            'targetEntity' => $className::getTranslationEntityClass(),
+            'orphanRemoval' => true,
+        ]);
+    }
+
+    /**
+     * @param ClassMetadata<object> $classMetadata
+     */
+    private function mapTranslation(ClassMetadata $classMetadata, ObjectManager $objectManager): void
+    {
+        if (!$classMetadata->hasAssociation('translatable')) {
+            /** @var class-string<TranslationInterface> $className */
+            $className = $classMetadata->getName();
+            $targetEntity = $className::getTranslatableEntityClass();
+
+            /** @var ClassMetadata<object> $targetMetadata */
+            $targetMetadata = $objectManager->getClassMetadata($targetEntity);
+
+            $classMetadata->mapManyToOne([
+                'fieldName' => 'translatable',
+                'inversedBy' => 'translations',
+                'cascade' => ['persist'],
+                'fetch' => $this->translationFetchMode,
+                'joinColumns' => [
+                    [
+                        'name' => 'translatable_id',
+                        'referencedColumnName' => $targetMetadata->getSingleIdentifierColumnName(),
+                        'onDelete' => 'CASCADE',
+                    ],
+                ],
+                'targetEntity' => $targetEntity,
+            ]);
+        }
+
+        $name = $classMetadata->getTableName() . '_unique_translation';
+        if (
+            !isset($classMetadata->table['uniqueConstraints'][$name])
+            && $classMetadata->getName() === $classMetadata->rootEntityName
+        ) {
+            $classMetadata->table['uniqueConstraints'][$name] = [
+                'columns' => ['translatable_id', self::LOCALE],
+            ];
+        }
+
+        if (!$classMetadata->hasField(self::LOCALE) && !$classMetadata->hasAssociation(self::LOCALE)) {
+            $classMetadata->mapField([
+                'fieldName' => self::LOCALE,
+                'type' => 'string',
+                'length' => 5,
+            ]);
+        }
+    }
 }

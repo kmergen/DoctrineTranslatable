@@ -1,0 +1,13 @@
+# Opt-in PHPStan extension for consumers:
+#   includes:
+#       - vendor/kmergen/doctrine-translatable/extension.neon
+services:
+    -
+        class: Kmergen\DoctrineTranslatable\PHPStan\Type\TranslatableTranslateDynamicMethodReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+    -
+        class: Kmergen\DoctrineTranslatable\PHPStan\Type\TranslatableGetTranslationsDynamicMethodReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+    -
+        class: Kmergen\DoctrineTranslatable\PHPStan\Type\TranslationGetTranslatableDynamicMethodReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]

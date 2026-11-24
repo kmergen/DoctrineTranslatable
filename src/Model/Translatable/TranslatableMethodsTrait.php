@@ -7,31 +7,25 @@ namespace Kmergen\DoctrineTranslatable\Model\Translatable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
-use Kmergen\DoctrineTranslatable\Exception\TranslatableException;
 
 trait TranslatableMethodsTrait
 {
   /**
    * @return Collection<string, TranslationInterface>
    */
-  public function getTranslations()
+  public function getTranslations(): Collection
   {
     // initialize collection, usually in ctor
-    if ($this->translations === null) {
-      $this->translations = new ArrayCollection();
-    }
+    $this->translations ??= new ArrayCollection();
 
     return $this->translations;
   }
 
   /**
-   * @param Collection<string, TranslationInterface> $translations
-   * @phpstan-param iterable<TranslationInterface> $translations
+   * @param iterable<TranslationInterface> $translations
    */
   public function setTranslations(iterable $translations): void
   {
-    $this->ensureIsIterableOrCollection($translations);
-
     foreach ($translations as $translation) {
       $this->addTranslation($translation);
     }
@@ -43,9 +37,7 @@ trait TranslatableMethodsTrait
   public function getNewTranslations(): Collection
   {
     // initialize collection, usually in ctor
-    if ($this->newTranslations === null) {
-      $this->newTranslations = new ArrayCollection();
-    }
+    $this->newTranslations ??= new ArrayCollection();
 
     return $this->newTranslations;
   }
@@ -131,9 +123,7 @@ trait TranslatableMethodsTrait
    */
   protected function doTranslate(?string $locale = null, bool $fallbackToDefault = true): TranslationInterface
   {
-    if ($locale === null) {
-      $locale = $this->getCurrentLocale();
-    }
+    $locale ??= $this->getCurrentLocale();
 
     $foundTranslation = $this->findTranslationByLocale($locale);
     if ($foundTranslation && !$foundTranslation->isEmpty()) {
@@ -167,18 +157,20 @@ trait TranslatableMethodsTrait
   /**
    * An extra feature allows you to proxy translated fields of a translatable entity.
    *
+   * @param array<int|string, mixed> $arguments
+   *
    * @return mixed The translated value of the field for current locale
    */
-  protected function proxyCurrentLocaleTranslation(string $method, array $arguments = [])
+  protected function proxyCurrentLocaleTranslation(string $method, array $arguments = []): mixed
   {
     // allow $entity->name call $entity->getName() in templates
-    if (!method_exists(self::getTranslationEntityClass(), $method)) {
+    if (!method_exists(static::getTranslationEntityClass(), $method)) {
       $method = 'get' . ucfirst($method);
     }
 
     $translation = $this->translate($this->getCurrentLocale());
 
-    return call_user_func_array([$translation, $method], $arguments);
+    return $translation->{$method}(...$arguments);
   }
 
   /**
@@ -203,29 +195,9 @@ trait TranslatableMethodsTrait
 
   protected function computeFallbackLocale(string $locale): ?string
   {
-    if (strrchr($locale, '_') !== false) {
-      return substr($locale, 0, -strlen(strrchr($locale, '_')));
-    }
+    $pos = strrpos($locale, '_');
 
-    return null;
-  }
-
-  /**
-   * @param Collection|mixed $translations
-   */
-  private function ensureIsIterableOrCollection($translations): void
-  {
-    if ($translations instanceof Collection) {
-      return;
-    }
-
-    if (is_iterable($translations)) {
-      return;
-    }
-
-    throw new TranslatableException(
-      sprintf('$translations parameter must be iterable or %s', Collection::class)
-    );
+    return $pos !== false ? substr($locale, 0, $pos) : null;
   }
 
   private function resolveFallbackTranslation(string $locale): ?TranslationInterface

@@ -8,15 +8,13 @@ use Kmergen\DoctrineTranslatable\Contract\Entity\TranslatableInterface;
 
 trait TranslationPropertiesTrait
 {
-  /**
-   * @var string
-   */
-  protected $locale;
+    /**
+     * Mapped at runtime by LoadClassMetadataListener.
+     */
+    protected ?string $locale = null;
 
-  /**
-   * Will be mapped to translatable entity by TranslatableSubscriber
-   *
-   * @var TranslatableInterface
-   */
-  protected $translatable;
+    /**
+     * Mapped at runtime by LoadClassMetadataListener.
+     */
+    protected ?TranslatableInterface $translatable = null;
 }

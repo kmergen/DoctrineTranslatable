@@ -7,7 +7,7 @@ namespace Kmergen\DoctrineTranslatable\Tests\Fixtures\Entity\Translatable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
-use Kmergen\DoctrineTranslatable\Exception\ShouldNotHappenException;
+use Kmergen\DoctrineTranslatable\Tests\Fixtures\ShouldNotHappenException;
 use Kmergen\DoctrineTranslatable\Model\Translatable\TranslationTrait;
 
 #[MappedSuperclass]

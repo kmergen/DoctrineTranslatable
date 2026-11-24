@@ -21,9 +21,9 @@ class TranslatableEntityWithCustomInterface implements ExtendedTranslatableInter
     private int $id;
 
     /**
-     * @return mixed
+     * @param array<int, mixed> $arguments
      */
-    public function __call(string $method, array $arguments)
+    public function __call(string $method, array $arguments): mixed
     {
         return $this->proxyCurrentLocaleTranslation($method, $arguments);
     }

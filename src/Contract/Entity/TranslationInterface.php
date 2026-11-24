@@ -6,6 +6,9 @@ namespace Kmergen\DoctrineTranslatable\Contract\Entity;
 
 interface TranslationInterface
 {
+  /**
+   * @return class-string<TranslatableInterface>
+   */
   public static function getTranslatableEntityClass(): string;
 
   public function setTranslatable(TranslatableInterface $translatable): void;

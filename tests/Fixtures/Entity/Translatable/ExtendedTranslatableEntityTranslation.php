@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Kmergen\DoctrineTranslatable\Exception\ShouldNotHappenException;
+use Kmergen\DoctrineTranslatable\Tests\Fixtures\ShouldNotHappenException;
 
 #[Entity]
 class ExtendedTranslatableEntityTranslation extends AbstractTranslatableEntityTranslation

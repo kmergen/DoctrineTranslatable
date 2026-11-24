@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Kmergen\DoctrineTranslatable\Tests\ORM\Translatable;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectRepository;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslatableInterface;
 use Kmergen\DoctrineTranslatable\Contract\Entity\TranslationInterface;
@@ -174,12 +174,16 @@ final class TranslatableTest extends AbstractBehaviorTestCase
     public function testSubscriberShouldConfigureEntityWithCurrentLocale(): void
     {
         $translatableEntity = new TranslatableEntity();
+        // trait default before the listener ran
+        $this->assertSame('de', $translatableEntity->getCurrentLocale());
+
+        // prePersist sets current + default locale from the LocaleProvider
+        $this->entityManager->persist($translatableEntity);
+        $this->assertSame('en', $translatableEntity->getCurrentLocale());
+
         // magic method
         $translatableEntity->setTitle('test');
-
         $translatableEntity->mergeNewTranslations();
-
-        $this->entityManager->persist($translatableEntity);
 
         $this->entityManager->flush();
 
@@ -197,11 +201,12 @@ final class TranslatableTest extends AbstractBehaviorTestCase
     public function testSubscriberShouldConfigureEntityWithDefaultLocale(): void
     {
         $translatableEntity = new TranslatableEntity();
+        $this->entityManager->persist($translatableEntity);
+        $this->assertSame('en', $translatableEntity->getDefaultLocale());
+
         // magic method
         $translatableEntity->setTitle('test');
         $translatableEntity->mergeNewTranslations();
-
-        $this->entityManager->persist($translatableEntity);
 
         $this->entityManager->flush();
 
@@ -347,11 +352,9 @@ final class TranslatableTest extends AbstractBehaviorTestCase
 
     public function testPhpStanExtensionOnInterfaces(): void
     {
-        /** @var TranslationInterface $translatableEntityTranslation */
         $translatableEntityTranslation = new TranslatableEntityTranslation();
         $translatableEntityTranslation->setLocale('fr');
 
-        /** @var TranslatableInterface $translatableEntity */
         $translatableEntity = new TranslatableEntity();
         $translatableEntity->addTranslation($translatableEntityTranslation);
 
@@ -410,7 +413,7 @@ final class TranslatableTest extends AbstractBehaviorTestCase
         $this->assertTrue($translatableClassMetadata->isAssociationInverseSide('translations'));
 
         $this->assertSame(
-            ClassMetadataInfo::ONE_TO_MANY,
+            ClassMetadata::ONE_TO_MANY,
             $translatableClassMetadata->getAssociationMapping('translations')['type']
         );
     }
